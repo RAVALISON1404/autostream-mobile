@@ -1,25 +1,140 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
+import { IonContent, IonImg, IonPage } from '@ionic/react';
+import { useState } from 'react';
+import { Card } from '../components/Card';
+import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css';
+import 'bulma-list/css/bulma-list.css';
 
-const Home: React.FC = () => {
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Blank</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer />
-      </IonContent>
-    </IonPage>
-  );
+export const Home: React.FC = () => {
+	const logo = '/logo.png';
+	const [loaded, setLoaded] = useState<boolean>(true);
+	const [dashboardPanelActive, setDashboardPanelActive] = useState<boolean>(false);
+	const cardData = [
+		{ id: 1, title: 'List item 1', description: 'List item description 1', images: ['https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png'], isLiked: false },
+		{ id: 2, title: 'List item 2', description: 'List item description 2', images: ['https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png'], isLiked: false },
+		{ id: 3, title: 'List item 3', description: 'List item description 3', images: ['https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png'], isLiked: false },
+	];
+	const handleFilterClick = () => {
+		setDashboardPanelActive(!dashboardPanelActive);
+	};
+	console.log('Rendering Home component...');
+	return (
+		<IonPage>
+			<div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>
+			<header>
+				<nav className="navbar is-transparent has-background-light">
+					<div className="container is-fluid">
+						<div className="navbar-brand">
+							<a className="navbar-item">
+								<IonImg className="image is-48x48 is-rounded" src={logo}></IonImg>
+							</a>
+						</div>
+					</div>
+				</nav>
+			</header>
+			<IonContent className="dashboard is-full-height">
+				<div className={`dashboard-panel ${dashboardPanelActive ? 'is-active' : ''} is-small is-scrollable has-background-white`}>
+					<header className="dashboard-panel-header">
+
+					</header>
+					<div className="dashboard-panel-content">
+						<div className="buttons is-right">
+							<a className="delete close-menu" onClick={handleFilterClick}></a>
+						</div>
+						<aside className="menu has-text-white">
+							<p className="menu-label">
+								General
+							</p>
+							<ul className="menu-list">
+								<li><a>Dashboard</a></li>
+								<li><a>Customers</a></li>
+							</ul>
+							<p className="menu-label">
+								Administration
+							</p>
+							<ul className="menu-list">
+								<li><a>Team Settings</a></li>
+								<li>
+									<a className="is-active">Manage Your Team</a>
+									<ul>
+										<li><a>Members</a></li>
+										<li><a>Plugins</a></li>
+										<li><a>Add a member</a></li>
+									</ul>
+								</li>
+								<li><a>Invitations</a></li>
+								<li><a>Cloud Storage Environment Settings</a></li>
+								<li><a>Authentication</a></li>
+							</ul>
+							<p className="menu-label">
+								Transactions
+							</p>
+							<ul className="menu-list">
+								<li><a>Payments</a></li>
+								<li><a>Transfers</a></li>
+								<li><a>Balance</a></li>
+							</ul>
+						</aside>
+					</div>
+				</div>
+				<div className="dashboard-main is-scrollable" style={{ height: '100%' }}>
+					<section className="section p-5" style={{ height: '100%' }}>
+						<div className='content filter has-background-white py-3'>
+							<div className="field is-grouped is-grouped-right">
+								<div className="control">
+									<button className="button is-rounded is-white" onClick={handleFilterClick}>
+										<span className="icon has-text-info">
+											<i className="fa-solid fa-sliders"></i>
+										</span>
+									</button>
+								</div>
+								<div className="control">
+									<div className="dropdown is-right is-hoverable is-pulled-right">
+										<div className="dropdown-trigger">
+											<div className="button" aria-haspopup="true" aria-controls="dropdown-menu6">
+												<span>Filtrer par</span>
+												<span className="icon is-small">
+													<i className="fas fa-angle-down" aria-hidden="true"></i>
+												</span>
+											</div>
+										</div>
+										<div className="dropdown-menu" id="dropdown-menu6" role="menu">
+											<div className="dropdown-content">
+												<a href="#" className="dropdown-item">
+													En vedette
+												</a>
+												<a href="#" className="dropdown-item">
+													Les plus récents
+												</a>
+												<a href="#" className="dropdown-item">
+													Prix: décroissant
+												</a>
+												<a href="#" className="dropdown-item">
+													Prix: croissant
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div className="tile is-ancestor">
+							{cardData.map((data) => (
+								<div className="tile is-parent" key={data.id}>
+									<div className="tile is-child">
+										<Card
+											id={data.id}
+											title={data.title}
+											description={data.description}
+											images={data.images}
+											isLiked={data.isLiked}
+										/>
+									</div>
+								</div>
+							))}
+						</div>
+					</section>
+				</div>
+			</IonContent>
+		</IonPage>
+	);
 };
-
-export default Home;
