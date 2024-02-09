@@ -3,19 +3,24 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import bulmaCarousel from 'bulma-carousel/dist/js/bulma-carousel.min.js';
 import 'bulma-carousel/dist/css/bulma-carousel.min.css';
+import { Annonce } from "../models/Annonce";
 
 interface CardProps {
     id: number;
-    title: string;
-    description: string;
-    images?: string[];
+    annonce: Annonce;
     isLiked: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({ id, title, description, images, isLiked }) => {
+export const Card: React.FC<CardProps> = ({ id, annonce, isLiked }) => {
+    const [title, setTitle] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
     const [like, setLike] = useState<boolean>(isLiked);
+    const [images, setImages] = useState<string[]>([]);
     useEffect(() => {
         setTimeout(() => {
+            setImages(annonce.voiture.photos);
+            setTitle(annonce.voiture.modele.nommodele);
+            setDescription(annonce.descri);
             bulmaCarousel.attach('.carousel', {
                 initialSlide: 1,
                 slidesToScroll: 1,
@@ -48,9 +53,10 @@ export const Card: React.FC<CardProps> = ({ id, title, description, images, isLi
                             <span className="icon is-clickable">
                                 <i className={ like ? 'fa-solid fa-heart fa-lg' : 'fa-regular fa-heart fa-lg' } onClick={ handleLikeBtn }></i>
                             </span>
-                            <Link className="icon" to={`/annonce/detail/${id}`}>
+                            <Link to={`/annonce/detail/${annonce.idannonce}?data=${encodeURIComponent(JSON.stringify(annonce))}`}>
                                 <i className="fa-solid fa-chevron-right fa-lg"></i>
                             </Link>
+
                         </div>
                     </div>
                 </div>

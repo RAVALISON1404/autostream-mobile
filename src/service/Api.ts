@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 
 interface ApiResponse<T> {
-    data: T[];
+    data: T | null;
     loading: boolean;
     error: string | null;
 }
 
 function useApi<T>(url: string): ApiResponse<T> {
-    const [data, setData] = useState<T[]>([]);
+    const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -23,9 +23,9 @@ function useApi<T>(url: string): ApiResponse<T> {
                 setLoading(true);
             }
         };
-        fetchData();
+       fetchData();        
     }, []);
-
+    
     return { data, loading, error };
 }
 

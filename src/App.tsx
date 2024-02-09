@@ -18,7 +18,7 @@ import { useState } from 'react';
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [loaded, setLoaded] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState<boolean>(true);
   return (
     <IonApp>
       <div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>

@@ -1,25 +1,29 @@
-import { IonContent, IonImg, IonPage } from '@ionic/react';
-import { useState } from 'react';
+import { IonContent, IonImg, IonPage, useIonViewWillEnter } from '@ionic/react';
+import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css';
 import 'bulma-list/css/bulma-list.css';
+import useApi from '../service/Api';
+import { Validation } from '../models/Annonce';
 
 export const Home: React.FC = () => {
 	const logo = '/logo.png';
-	const [loaded, setLoaded] = useState<boolean>(true);
 	const [dashboardPanelActive, setDashboardPanelActive] = useState<boolean>(false);
-	const cardData = [
-		{ id: 1, title: 'List item 1', description: 'List item description 1', images: ['https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png'], isLiked: false },
-		{ id: 2, title: 'List item 2', description: 'List item description 2', images: ['https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png'], isLiked: false },
-		{ id: 3, title: 'List item 3', description: 'List item description 3', images: ['https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png', 'https://bulma.io/images/placeholders/1280x960.png'], isLiked: false },
-	];
+	const [cardData, setCardData] = useState<Validation[] | null>(null);
+	const { data, loading, error } = useApi<Validation[]>("https://back-autostream-production.up.railway.app/validation/etat/1");
+
+	useEffect(() => {
+		setTimeout(() => {
+			setCardData(data);
+		}, 1);
+	}, [data]);
 	const handleFilterClick = () => {
 		setDashboardPanelActive(!dashboardPanelActive);
 	};
 	console.log('Rendering Home component...');
 	return (
 		<IonPage>
-			<div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>
+			<div className={`pageloader is-info ${loading ? '' : 'is-active'}`}></div>
 			<header>
 				<nav className="navbar is-transparent has-background-light">
 					<div className="container is-fluid">
@@ -99,7 +103,7 @@ export const Home: React.FC = () => {
 										</div>
 										<div className="dropdown-menu" id="dropdown-menu6" role="menu">
 											<div className="dropdown-content">
-												<a href="#" className="dropdown-item">
+												<a href="" className="dropdown-item">
 													En vedette
 												</a>
 												<a href="#" className="dropdown-item">
@@ -118,15 +122,13 @@ export const Home: React.FC = () => {
 							</div>
 						</div>
 						<div className="tile is-ancestor">
-							{cardData.map((data) => (
-								<div className="tile is-parent" key={data.id}>
+							{cardData?.map((data) => (
+								<div className="tile is-parent" key={data.idvalidation}>
 									<div className="tile is-child">
 										<Card
-											id={data.id}
-											title={data.title}
-											description={data.description}
-											images={data.images}
-											isLiked={data.isLiked}
+											id={data.annonce.idannonce}
+											annonce={data.annonce}
+											isLiked={false}
 										/>
 									</div>
 								</div>
