@@ -8,8 +8,8 @@ import useApi from "../service/Api";
 export const AjoutAnnonce: React.FC = () => {
     const logo = '/logo.png';
     const [loaded, setLoaded] = useState<boolean>(false);
-    const Tabs = document.querySelectorAll("[data-tab]");
-    console.log(Tabs);
+    // const Tabs = document.querySelectorAll("[data-tab]");
+    // console.log(Tabs);
 
     const [drivetypes, setDrivetypes] = useState<Drivetype[]>([]);
     const { data, loading, error } = useApi<Drivetype[]>(
@@ -71,7 +71,7 @@ export const AjoutAnnonce: React.FC = () => {
         e.preventDefault();
         const formData = new FormData(document.querySelector('form')!);
         console.log(formData);
-        
+
         const nbplace = formData.get('idmodele');
         const nbporte = formData.get('nbporte');
         const kilometrage = formData.get('kilometrage');
@@ -87,61 +87,65 @@ export const AjoutAnnonce: React.FC = () => {
         const idoptions = formData.getAll('idoptions');
         const photos = formData.get('photos');
         const voitureEnvoyer = {
-            "nbplace" : nbplace,
-            "nbporte" : nbporte,
-            "kilometrage" : kilometrage,
-            "cylindre" : cylindre,
-            "puissance" : puissance,
-            "fumeur" : fumeur,
-            "datesortie" : datesortie,
+            "nbplace": nbplace,
+            "nbporte": nbporte,
+            "kilometrage": kilometrage,
+            "cylindre": cylindre,
+            "puissance": puissance,
+            "fumeur": fumeur,
+            "datesortie": datesortie,
             "conduite": {
-                "idconduite" : idconduite
+                "idconduite": idconduite
             },
-            "modele" : {
-                "idmodele" : idmodele
+            "modele": {
+                "idmodele": idmodele
             },
-            "drivetype" : {
-                "iddrivetype" : iddrivetype
+            "drivetype": {
+                "iddrivetype": iddrivetype
             },
-            "transmission" : {
-                "idtransmission" : idtransmission
+            "transmission": {
+                "idtransmission": idtransmission
             },
-            "energie" : {
-                "idenergie" : idenergie
+            "energie": {
+                "idenergie": idenergie
             },
-            "idoptions" : [idoptions]
-            , "photos" : photos
+            "idoptions": [idoptions]
+            , "photos": photos
         }
         console.log(JSON.stringify(voitureEnvoyer));
-        try {
-            const response = await fetch(voiture, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },          
-                body: JSON.stringify(voitureEnvoyer)
-            });
-            if (response.ok) {
-                const responseData = await response.json();
-                console.log(responseData);
+        // try {
+        // const response = await fetch(voiture, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Authorization': `Bearer ${token}`
+        //     },          
+        //     body: JSON.stringify(voitureEnvoyer)
+        // });
+        // if (response.ok) {
+        //     const responseData = await response.json();
+        //     console.log(responseData);
 
-                const annonceEnvoyer = {
-                    
-                }
-                const token = responseData.response.token;
-                localStorage.setItem('token',token);
-                console.log("token ",localStorage.getItem('token'));
-            }
-            else {
-                alert('Échec de la connexion', JSON.stringify(response));
-            }
-        }
-        catch (error) {
-            alert('Erreur lors de la connexion'+ error);
-        }
+        //     const annonceEnvoyer = {
+
+        //     }
+        //     const token = responseData.response.token;
+        //     localStorage.setItem('token',token);
+        //     console.log("token ",localStorage.getItem('token'));
+        // }
+        // else {
+        //     alert('Échec de la connexion', JSON.stringify(response));
+        // }
+        // }
+        // catch (error) {
+        //     alert('Erreur lors de la connexion'+ error);
+        // }
     }
-
+    useEffect(() => {
+        if (loading && loading1 && loading2 && loading3 && loading4) {
+            setLoaded(true);
+        }
+    }, [loading, loading1, loading2, loading3, loading4]);
 
     //console.log('Rendering AjoutAnnonce component...');
     return (
@@ -317,23 +321,23 @@ export const AjoutAnnonce: React.FC = () => {
                             </div>
                         </div>
                         <div className="field">
-                        <label className="label">Photo</label>
-                        <div className="control is-expanded">
-                            <div className="file is-boxed">
-                                <label className="file-label">
-                                    <input className="file-input" type="file" name="photos" />
-                                    <span className="file-cta">
-                                        <span className="file-icon">
-                                            <i className="fas fa-upload"></i>
+                            <label className="label">Photo</label>
+                            <div className="control is-expanded">
+                                <div className="file is-boxed">
+                                    <label className="file-label">
+                                        <input className="file-input" type="file" name="photos" />
+                                        <span className="file-cta">
+                                            <span className="file-icon">
+                                                <i className="fas fa-upload"></i>
+                                            </span>
+                                            <span className="file-label">
+                                                Importer
+                                            </span>
                                         </span>
-                                        <span className="file-label">
-                                            Importer
-                                        </span>
-                                    </span>
-                                </label>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
                         <div className="field">
                             <div className="control is-expanded">
                                 <button className="button is-fullwidth is-outlined is-danger has-text-weight-semibold" onClick={handleSubmit}>
