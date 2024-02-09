@@ -92,7 +92,7 @@ export const AjoutAnnonce: React.FC = () => {
                     <div className="field">
                         <label className="label">Puissance</label>
                         <div className="control is-expanded">
-                            <input type="number" className="input" />
+                            <input type="number" className="input"  />
                         </div>
                     </div>
                     <div className="field">

@@ -1,4 +1,4 @@
-import { IonContent, IonImg, IonPage, useIonViewWillEnter } from '@ionic/react';
+import { IonContent, IonImg, IonPage, IonRefresher, IonRefresherContent, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css';
@@ -11,19 +11,35 @@ export const Home: React.FC = () => {
 	const [dashboardPanelActive, setDashboardPanelActive] = useState<boolean>(false);
 	const [cardData, setCardData] = useState<Validation[] | null>(null);
 	const { data, loading, error } = useApi<Validation[]>("https://back-autostream-production.up.railway.app/validation/etat/1");
-
+	const [loaded, setLoaded] = useState<boolean>(loading);
 	useEffect(() => {
 		setTimeout(() => {
 			setCardData(data);
+			setLoaded(loading);
 		}, 1);
 	}, [data]);
+
+	useEffect(() => {
+
+	}, [loaded]);
 	const handleFilterClick = () => {
 		setDashboardPanelActive(!dashboardPanelActive);
 	};
+
+	function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+		setLoaded(false);
+		setTimeout(() => {
+			event.detail.complete();
+		}, 3000);
+		setLoaded(true);
+	}
 	console.log('Rendering Home component...');
 	return (
 		<IonPage>
-			<div className={`pageloader is-info ${loading ? '' : 'is-active'}`}></div>
+			<div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>
+			<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+				<IonRefresherContent></IonRefresherContent>
+			</IonRefresher>
 			<header>
 				<nav className="navbar is-transparent has-background-light">
 					<div className="container is-fluid">
@@ -126,7 +142,6 @@ export const Home: React.FC = () => {
 								<div className="tile is-parent" key={data.idvalidation}>
 									<div className="tile is-child">
 										<Card
-											id={data.annonce.idannonce}
 											annonce={data.annonce}
 											isLiked={false}
 										/>

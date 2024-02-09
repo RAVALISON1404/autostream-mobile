@@ -18,10 +18,10 @@ export const Index: React.FC = () => {
                 <Redirect exact path="/home" to="/home/annonces" />
                 <Route path="/home/annonces" component={Home} />
                 <Route path="/home/annonce">
-                    {connected ? <AjoutAnnonce /> : <Redirect to="/login" />}
+                    {connected ? <AjoutAnnonce /> : <Redirect to="/signin" />}
                 </Route>
                 <Route path="/home/profile">
-                    {connected ? <Profil /> : <Redirect to="/login" />}
+                    {connected ? <Profil /> : <Redirect to="/signin" />}
                 </Route>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
