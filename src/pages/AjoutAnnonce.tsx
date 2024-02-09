@@ -5,7 +5,7 @@ import '../theme/style.css';
 
 export const AjoutAnnonce: React.FC = () => {
     const logo = '/logo.png';
-    const [loaded, setLoaded] = useState<boolean>(true);
+    const [loaded, setLoaded] = useState<boolean>(false);
     const Tabs = document.querySelectorAll("[data-tab]");
     console.log(Tabs);
     
