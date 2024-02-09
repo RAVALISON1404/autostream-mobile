@@ -100,13 +100,13 @@ export const Home: React.FC = () => {
 					<section className="section p-5" style={{ height: '100%' }}>
 						<div className='content filter has-background-white py-3'>
 							<div className="field is-grouped is-grouped-right">
-								<div className="control">
+								{/* <div className="control">
 									<button className="button is-rounded is-white" onClick={handleFilterClick}>
 										<span className="icon has-text-info">
 											<i className="fa-solid fa-sliders"></i>
 										</span>
 									</button>
-								</div>
+								</div> */}
 								<div className="control">
 									<div className="dropdown is-right is-hoverable is-pulled-right">
 										<div className="dropdown-trigger">
