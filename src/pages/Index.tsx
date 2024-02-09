@@ -6,7 +6,7 @@ import { AjoutAnnonce } from "./AjoutAnnonce";
 import { Profil } from "./Profil";
 
 export const Index: React.FC = () => {
-    const [connected, setConnected] = useState<boolean>(false);
+    const [connected, setConnected] = useState<boolean>(true);
     useEffect(() => {
         const token = `window.localStorage.getItem('token')`;
         if (token) setConnected(true);
