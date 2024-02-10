@@ -1,51 +1,54 @@
-import { IonContent, IonImg, IonPage, IonRefresher, IonRefresherContent, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
+import { IonContent, IonImg, IonPage } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import 'bulma-extensions/bulma-pageloader/dist/css/bulma-pageloader.min.css';
 import 'bulma-list/css/bulma-list.css';
 import useApi from '../service/Api';
 import { Validation } from '../models/Annonce';
+import { useHistory } from 'react-router';
 
 export const Home: React.FC = () => {
+	const history = useHistory();
+	const logout = async () => {
+		localStorage.removeItem('token');
+		history.push('/signin');
+	}
+	const [filter, setFilter] = useState<number | null>(null);
 	const logo = '/logo.png';
 	const [dashboardPanelActive, setDashboardPanelActive] = useState<boolean>(false);
 	const [cardData, setCardData] = useState<Validation[] | null>(null);
-	const { data, loading, error } = useApi<Validation[]>("https://back-autostream-production.up.railway.app/validation/etat/1");
+	const { data, loading, error } = useApi<Validation[]>('https://back-autostream-production.up.railway.app/annonce/historique', localStorage.getItem('token')!);
 	const [loaded, setLoaded] = useState<boolean>(loading);
+	const filteredData = cardData?.filter(item => {
+		if (filter === null) {
+			return true;
+		}
+		return item.etat === filter;
+	});
+	const handleFilterClick = (value: any) => {
+		document.querySelector('.dropdown')?.classList.remove('is-active');
+		setFilter(value);
+	};
 	useEffect(() => {
 		setTimeout(() => {
 			setCardData(data);
 			setLoaded(loading);
 		}, 1);
 	}, [data]);
-
-	useEffect(() => {
-
-	}, [loaded]);
-	const handleFilterClick = () => {
-		setDashboardPanelActive(!dashboardPanelActive);
-	};
-
-	function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-		setLoaded(false);
-		setTimeout(() => {
-			event.detail.complete();
-		}, 3000);
-		setLoaded(true);
-	}
-	console.log('Rendering Home component...');
 	return (
 		<IonPage>
 			<div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>
-			<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-				<IonRefresherContent></IonRefresherContent>
-			</IonRefresher>
 			<header>
 				<nav className="navbar is-transparent has-background-light">
 					<div className="container is-fluid">
-						<div className="navbar-brand">
+						<div className="navbar-brand is-flex is-justify-content-space-between" style={{ width: '85%' }}>
 							<a className="navbar-item">
 								<IonImg className="image is-48x48 is-rounded" src={logo}></IonImg>
+							</a>
+							<a className="navbar-item">
+								<span className="icon has-text-info" onClick={logout}>
+									<i className="fa-solid fa-arrow-right-from-bracket fa-lg"></i>
+								</span>
 							</a>
 						</div>
 					</div>
@@ -100,13 +103,6 @@ export const Home: React.FC = () => {
 					<section className="section p-5" style={{ height: '100%' }}>
 						<div className='content filter has-background-white py-3'>
 							<div className="field is-grouped is-grouped-right">
-								{/* <div className="control">
-									<button className="button is-rounded is-white" onClick={handleFilterClick}>
-										<span className="icon has-text-info">
-											<i className="fa-solid fa-sliders"></i>
-										</span>
-									</button>
-								</div> */}
 								<div className="control">
 									<div className="dropdown is-right is-hoverable is-pulled-right">
 										<div className="dropdown-trigger">
@@ -119,17 +115,17 @@ export const Home: React.FC = () => {
 										</div>
 										<div className="dropdown-menu" id="dropdown-menu6" role="menu">
 											<div className="dropdown-content">
-												<a href="" className="dropdown-item">
-													En vedette
+												<a className="dropdown-item" onClick={() => handleFilterClick(null)}>
+													Tous
 												</a>
-												<a href="#" className="dropdown-item">
-													Les plus récents
+												<a className="dropdown-item" onClick={() => handleFilterClick(0)}>
+													En cours de validation
 												</a>
-												<a href="#" className="dropdown-item">
-													Prix: décroissant
+												<a className="dropdown-item" onClick={() => handleFilterClick(1)}>
+													Disponible
 												</a>
-												<a href="#" className="dropdown-item">
-													Prix: croissant
+												<a className="dropdown-item" onClick={() => handleFilterClick(3)}>
+													Vendu
 												</a>
 											</div>
 										</div>
@@ -138,11 +134,11 @@ export const Home: React.FC = () => {
 							</div>
 						</div>
 						<div className="tile is-ancestor">
-							{cardData?.map((data) => (
+							{filteredData?.map((data) => (
 								<div className="tile is-parent" key={data.idvalidation}>
 									<div className="tile is-child">
 										<Card
-											annonce={data.annonce}
+											validation={data}
 											isLiked={false}
 										/>
 									</div>

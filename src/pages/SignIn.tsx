@@ -21,21 +21,21 @@ export const SignIn: React.FC = () => {
     console.log('Rendering SignIn component...');
 
     const [form, setForm] = useState<login>({
-        email:'',
-        mdp:''
+        email: '',
+        mdp: ''
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const fieldName: string = e.target.name;
         const fieldValue: string = e.target.value;
-        const newField: Partial<login> = {[fieldName]: { value: fieldValue }};
+        const newField: Partial<login> = { [fieldName]: { value: fieldValue } };
 
-        setForm({...form, [fieldName]: fieldValue});
+        setForm({ ...form, [fieldName]: fieldValue });
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-       
+        setLoaded(false);
         try {
             const response = await api.post('/login/auth', {
                 email: form.email,
@@ -47,16 +47,16 @@ export const SignIn: React.FC = () => {
             localStorage.setItem('token', token);
 
             history.push('/home');
-
+            setLoaded(true);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-
     }
 
 
     return (
         <IonPage>
+            <div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>
             <IonContent fullscreen className="ion-padding">
                 <div className="container mt-6 pt-6">
                     <h3 className="title has-text-centered">
@@ -88,7 +88,7 @@ export const SignIn: React.FC = () => {
                             </div>
                         </div>
                     </form>
-                   
+
                     <p>Vous n'avez pas de compte? <a href="/signup">Inscrivez-vous ici</a></p>
                     <div className="is-divider" data-content="OU"></div>
                     <div className="field">

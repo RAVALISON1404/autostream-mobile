@@ -36,17 +36,15 @@ export const SignUp: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-       
+        setLoaded(false)
         try {
             const response = await api.post('/login/register', {
                 nomutilisateur: form.nomutilisateur,
                 email: form.email,
                 mdp: form.mdp
             });
-
-
             history.push('/signIn');
-
+            setLoaded(true);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -89,7 +87,7 @@ export const SignUp: React.FC = () => {
                         <div className="field">
                             <div className="control">
                                 <button className="button is-fullwidth is-info" type="submit">
-                                    Se connecter
+                                    S'inscrire
                                 </button>
                             </div>
                         </div>

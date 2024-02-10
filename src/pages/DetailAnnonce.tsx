@@ -1,21 +1,23 @@
 import { IonContent, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { useHistory } from "react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "bulma-carousel/dist/css/bulma-carousel.min.css";
 import bulmaCarousel from "bulma-carousel/dist/js/bulma-carousel.min.js";
-import { Annonce, Options } from "../models/Annonce";
+import { Options, Validation } from "../models/Annonce";
 import useApi from "../service/Api";
 
 export const DetailAnnonce: React.FC = () => {
+    const [etat, setEtat] = useState<number | null>(null);
     const searchParams = new URLSearchParams(window.location.search);
     const data = searchParams.get("data");
-    const annonce: Annonce = data ? JSON.parse(decodeURIComponent(data)) : null;
+    var validation: Validation = data ? JSON.parse(decodeURIComponent(data)) : null;
+    const annonce = validation.annonce;
     const history = useHistory();
     const handleGoBack = () => {
         history.goBack();
     };
-    const [options, setOptions] = useState<Options[]>([]);
     const ListOption: Options[] = [];
+    const [loaded, setLoaded] = useState<boolean>(true);
     const optionslist = annonce.voiture.idoptions;
     optionslist.forEach((element) => {
         const { data, loading, error } = useApi<Options>(
@@ -25,9 +27,6 @@ export const DetailAnnonce: React.FC = () => {
             ListOption.push(data);
         }
     });
-    useEffect(() => {
-        setOptions(ListOption);
-    }, [data]);
     useIonViewWillEnter(() => {
         bulmaCarousel.attach(".carousel", {
             slidesToScroll: 1,
@@ -37,10 +36,38 @@ export const DetailAnnonce: React.FC = () => {
             autoplay: true,
         });
     });
-
+    const handleSellBtn = async () => {
+        setLoaded(false);
+        const annonceToUpdate = {
+            'etat': '3',
+            'annonce': {
+                'idannonce': annonce.idannonce
+            }
+        }
+        try {
+            const response = await fetch('https://back-autostream-production.up.railway.app/annonce', {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(annonceToUpdate),
+            });
+            if (!response.ok) {
+                throw new Error('Erreur lors de la mise à jour de l\'annonce');
+            }
+            const data = await response.json();
+            validation = data;
+            setEtat(validation.etat);
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour de l\'annonce : ', error);
+        } finally {
+            setLoaded(true);
+        }
+    }
     console.log("Rendering DetailAnnonce component...");
     return (
         <IonPage>
+            <div className={`pageloader is-info ${loaded ? '' : 'is-active'}`}></div>
             <header className="has-background-light">
                 <nav className="navbar has-background-light">
                     <div className="navbar-brand">
@@ -154,34 +181,27 @@ export const DetailAnnonce: React.FC = () => {
                                                 <p className="subtitle has-text-weight-bold">{annonce.voiture.datesortie.substring(0, 4)}</p>
                                             </div>
                                         </div>
-                                        <div className="level-item has-text-centered">
-                                            <div>
-                                                <p className="heading">Etat</p>
-                                                <p className="subtitle has-text-weight-bold">500</p>
-                                            </div>
-                                        </div>
                                     </nav>
                                     <article>{annonce.descri}</article>
                                     <blockquote>
                                         <h3>MGA {annonce.prix.toLocaleString('fr-FR')}</h3>
                                     </blockquote>
+                                    {validation.etat !== 0 && (
+                                        <div className="buttons is-right">
+                                            <button className="button is-rounded is-small is-danger has-text-weight-semibold" disabled={etat === 3} onClick={handleSellBtn}>
+                                                Vendu
+                                            </button>
+                                        </div>
+                                    )}
 
-                                    <div className="buttons is-right">
-                                        <button className="button is-rounded is-small is-info has-text-weight-semibold">
-                                            Confirmer
-                                        </button>
-                                        <button className="button is-rounded is-small is-danger has-text-weight-semibold">
-                                            Supprimer
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className="tile is-6 carousel">
                             {annonce.voiture.photos.map((item, index) => {
                                 return (
-                                    <div className="tile is-parent" key={index}>
-                                        <div className="tile is-child item-1">
+                                    <div className={`tile is-parent item-${index}`} key={index}>
+                                        <div className="tile is-child">
                                             <figure className="image is-4by3">
                                                 <img src={item} />
                                             </figure>

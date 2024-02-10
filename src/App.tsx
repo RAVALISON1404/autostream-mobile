@@ -1,6 +1,7 @@
 import { setupIonicReact, IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Index } from './pages/Index';
 import { DetailAnnonce } from './pages/DetailAnnonce';
 import { SignIn } from './pages/SignIn';
@@ -18,13 +19,16 @@ import './theme/variables.css';
 setupIonicReact();
 
 const App: React.FC = () => {
-
+  const token = localStorage.getItem('token');
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
           <Redirect exact path="/" to="/home" />
-          <Route path="/home" component={Index} />
+          <Redirect path='/home' to={ token ? '/home': '/signin'} />
+          <Route path="/home">
+            <Index />
+          </Route>
           <Route path="/signin" component={SignIn} />
           <Route path="/signup" component={SignUp} />
           <Route path="/annonce/detail/:id" component={DetailAnnonce} />

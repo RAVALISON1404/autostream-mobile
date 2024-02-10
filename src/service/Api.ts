@@ -4,17 +4,21 @@ interface ApiResponse<T> {
     data: T | null;
     loading: boolean;
     error: string | null;
+    token: string | undefined;
 }
 
-function useApi<T>(url: string): ApiResponse<T> {
+function useApi<T>(url: string, token?: string): ApiResponse<T> {
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(url);
+                const headers: Record<string, string> = {};
+                if (token) {
+                    headers.Authorization = `Bearer ${token}`; 
+                }
+                const response = await fetch(url, { headers });
                 const result = await response.json();
                 setData(result);
             } catch (error) {
@@ -23,10 +27,9 @@ function useApi<T>(url: string): ApiResponse<T> {
                 setLoading(true);
             }
         };
-       fetchData();        
-    }, []);
-    
-    return { data, loading, error };
+        fetchData();
+    }, [url, token]);
+    return { data, loading, error, token };
 }
 
 export default useApi;
